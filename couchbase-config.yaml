@@ -1,0 +1,37 @@
+apiVersion: couchbase.com/v2
+kind: CouchbaseBucket
+metadata:
+  name: default
+  namespace: couchbase
+spec:
+  memoryQuota: 128Mi
+  ioPriority: low
+  evictionPolicy: valueOnly
+  conflictResolution: seqno
+  compressionMode: passive
+---
+apiVersion: couchbase.com/v2
+kind: CouchbaseCluster
+metadata:
+  name: couchbase
+  namespace: couchbase
+spec:
+  image: couchbase/server:7.1.1
+  security:
+    adminSecret: auth-couchbase-couchbase
+  networking:
+    exposeAdminConsole: true
+    adminConsoleServices:
+      - data
+  buckets:
+    managed: true
+  servers:
+    - size: 1
+      name: all_services
+      services:
+        - data
+        - index
+        - query
+        - search
+        - eventing
+        - analytics
