@@ -6,10 +6,13 @@ plugins {
 
 repositories {
     mavenCentral()
+     maven {
+        url "https://packages.confluent.io/maven/"
+    }
 }
 
 application {
-    mainClass = "beam_file2file.App"
+    mainClass = "beam_file2kafka.App"
 }
 
 java {
@@ -19,6 +22,7 @@ java {
 }
 
 ext.apacheBeamVersion = "2.+"
+ext.kafkaVersion = "3.+"
 
 dependencies {
   testImplementation "junit:junit:4.13.2"
@@ -26,6 +30,8 @@ dependencies {
 
   implementation "org.apache.beam:beam-sdks-java-core:$apacheBeamVersion"
   implementation "org.apache.beam:beam-runners-direct-java:$apacheBeamVersion"
+  implementation "org.apache.beam:beam-sdks-java-io-kafka:$apacheBeamVersion"
+  implementation "org.apache.kafka:kafka-clients:$kafkaVersion"
   implementation "org.slf4j:slf4j-api:1.+"
   implementation "org.slf4j:slf4j-jdk14:1.+"
   implementation "org.json:json:20220924"

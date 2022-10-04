@@ -1,7 +1,7 @@
 plugins {
-    id 'java'
-    id 'application'
-    id 'com.github.johnrengelman.shadow' version '7.+'
+    id "java"
+    id "application"
+    id "com.github.johnrengelman.shadow" version "7.+"
 }
 
 repositories {
@@ -9,7 +9,7 @@ repositories {
 }
 
 application {
-    mainClass = 'beam_generate.App'
+    mainClass = "beam_generate.App"
 }
 
 java {
@@ -18,22 +18,22 @@ java {
     }
 }
 
-ext.apacheBeamVersion = '2.+'
+ext.apacheBeamVersion = "2.+"
 
 dependencies {
-  testImplementation 'junit:junit:4.13.2'
-  implementation 'com.google.guava:guava:31.0.1-jre'
+  testImplementation "junit:junit:4.13.2"
+  implementation "com.google.guava:guava:31.0.1-jre"
 
   implementation "org.apache.beam:beam-sdks-java-core:$apacheBeamVersion"
   implementation "org.apache.beam:beam-runners-direct-java:$apacheBeamVersion"
   implementation "org.slf4j:slf4j-api:1.+"
   implementation "org.slf4j:slf4j-jdk14:1.+"
-  implementation 'org.json:json:20220924'
+  implementation "org.json:json:20220924"
 
   shadow "org.apache.beam:beam-sdks-java-core:$apacheBeamVersion"
 }
 
 shadowJar {
-  archiveBaseName = 'app'
+  archiveBaseName = "app"
   classifier = null
 }
