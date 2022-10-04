@@ -9,7 +9,7 @@ repositories {
 }
 
 application {
-    mainClass = 'beam.App'
+    mainClass = 'beam_file2file.App'
 }
 
 java {

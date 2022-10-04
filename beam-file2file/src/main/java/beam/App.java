@@ -1,4 +1,4 @@
-package beam;
+package _file2file;
 
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.AvroCoder;

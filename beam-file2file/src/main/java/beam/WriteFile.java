@@ -1,4 +1,4 @@
-package beam;
+package beam_file2file;
 
 import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.transforms.*;

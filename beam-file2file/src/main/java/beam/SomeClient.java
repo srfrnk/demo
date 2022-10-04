@@ -1,4 +1,4 @@
-package beam;
+package beam_file2file;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
