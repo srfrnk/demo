@@ -17,3 +17,8 @@ setup:
 	k9s
 
 deploy:
+	$(eval BUILD = $(shell cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20; echo;))
+	docker build -t enrich-api:${BUILD} enrich-api
+	kind -n demo load docker-image enrich-api:${BUILD}
+	cd manifests; cdk8s import; npm run compile; BUILD=${BUILD} cdk8s synth
+	kubectl apply -f manifests/dist/manifests.k8s.yaml
