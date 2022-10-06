@@ -34,14 +34,10 @@ load-images:
 	kind load docker-image -n demo quay.io/strimzi/kafka:0.31.1-kafka-3.2.3
 
 deploy:
-ifeq ($(shell uname -s),Darwin)
 	$(eval BUILD = $(shell openssl rand -hex 20;))
-else
-	$(eval BUILD = $(shell cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20; echo;))
-endif
 	docker build -t enrich-api:${BUILD} enrich-api
 	kind -n demo load docker-image enrich-api:${BUILD}
-	cd manifests; cdk8s import; npm run compile; BUILD=${BUILD} cdk8s synth
+	cd manifests; npm i; cdk8s import; npm run compile; BUILD=${BUILD} cdk8s synth
 	kubectl apply -f manifests/dist/manifests.k8s.yaml
 
 clear-data:
