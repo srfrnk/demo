@@ -27,6 +27,12 @@ setup:
 	@echo "**************************************************************************************************************************************"
 	@echo "\e[0m"
 
+load-images:
+	docker pull quay.io/strimzi/operator:0.31.1
+	kind load docker-image -n demo quay.io/strimzi/operator:0.31.1
+	docker pull quay.io/strimzi/kafka:0.31.1-kafka-3.2.3
+	kind load docker-image -n demo quay.io/strimzi/kafka:0.31.1-kafka-3.2.3
+
 deploy:
 	$(eval BUILD = $(shell cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20; echo;))
 	docker build -t enrich-api:${BUILD} enrich-api
