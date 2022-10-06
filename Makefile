@@ -15,16 +15,17 @@ setup:
 	while ! kubectl wait pod/couchbase-0000 --for=condition=Ready --timeout=3000s -n couchbase 2>/dev/null; do sleep 1; done
 	kubectl annotate -n couchbase pod/couchbase-0000 k9scli.io/auto-port-forwards=couchbase-server::8091:8091
 	kubectl annotate -n kafka pod/my-cluster-kafka-0 k9scli.io/auto-port-forwards=kafka::9092:9092
+
+	@echo "\e[33m"
+	@echo "**************************************************************************************************************************************"
+	@echo "Make sure your '/etc/hosts' file contains:"
+	@echo "127.0.0.1 my-cluster-kafka-0.my-cluster-kafka-brokers.kafka.svc"
+	@echo "**************************************************************************************************************************************"
 	@echo
-	@echo **************************************************************************************************************************************
-	@echo Make sure your `/etc/hosts` file contains:
-	@echo 127.0.0.1 my-cluster-kafka-0.my-cluster-kafka-brokers.kafka.svc
-	@echo **************************************************************************************************************************************
-	@echo
-	@echo **************************************************************************************************************************************
-	@echo Make sure you run port forwards for couchbase kafka and enrich-api (Or use K9S for that)
-	@echo **************************************************************************************************************************************
-	@echo
+	@echo "**************************************************************************************************************************************"
+	@echo "Make sure you run port forwards for couchbase kafka and enrich-api (Or use K9S for that)"
+	@echo "**************************************************************************************************************************************"
+	@echo "\e[0m"
 
 deploy:
 	$(eval BUILD = $(shell cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20; echo;))
