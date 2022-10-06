@@ -17,6 +17,6 @@ public class WriteFile extends PTransform<PCollection<String[]>, PDone> {
         .apply("Merge columns",
             MapElements.into(TypeDescriptors.strings())
                 .via((String[] cols) -> String.join(",", cols)))
-        .apply(TextIO.write().to("../data/output.csv").withoutSharding().withHeader(header));
+        .apply(TextIO.write().to("../data/output_file2file.csv").withoutSharding().withHeader(header));
   }
 }

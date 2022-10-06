@@ -39,3 +39,9 @@ deploy:
 	kind -n demo load docker-image enrich-api:${BUILD}
 	cd manifests; cdk8s import; npm run compile; BUILD=${BUILD} cdk8s synth
 	kubectl apply -f manifests/dist/manifests.k8s.yaml
+
+clear-data:
+	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic demo
+	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic demo_enriched
+	- rm data/output_file2file.csv
+	- rm data/output_kafka2file.csv
