@@ -45,4 +45,4 @@ clear-data:
 	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic demo
 	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic demo_enriched
 	- rm data/output_file2file.csv
-	- rm data/output_kafka2file.csv
+	- rm data/output_kafka2file_*.csv
