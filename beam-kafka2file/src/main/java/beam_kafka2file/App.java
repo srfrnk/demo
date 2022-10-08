@@ -25,8 +25,8 @@ public class App {
                 PipelineOptions options = PipelineOptionsFactory.fromArgs(args).create();
                 Pipeline pipeline = Pipeline.create(options);
                 PCollection<KV<Long, String>> linesInput = pipeline.apply(KafkaIO
-                                .<Long, String>read().withBootstrapServers(KAFKA_BROKER)
-                                .withTopic("demo_enriched")
+                                .<Long, String>read().withMaxNumRecords(10000)
+                                .withBootstrapServers(KAFKA_BROKER).withTopic("demo_enriched")
                                 .withConsumerConfigUpdates(
                                                 new ImmutableMap.Builder<String, Object>()
                                                                 .put(ConsumerConfig.GROUP_ID_CONFIG,
