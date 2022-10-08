@@ -34,7 +34,7 @@ public class App {
 
     final StreamsBuilder builder = new StreamsBuilder();
 
-    builder.<String, String>stream("demo").map((key, value) -> {
+    builder.<String, String>stream("demo_streams").map((key, value) -> {
       String[] cols = value.split(",");
       return new KeyValue<>(cols[0], cols[1]);
     }).map((key, value) -> new KeyValue<>(key, SomeClient.callAPI(value)))

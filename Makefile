@@ -35,14 +35,20 @@ load-images:
 	kind load docker-image -n demo quay.io/strimzi/kafka:0.31.1-kafka-3.2.3
 
 deploy:
+	# Used '--no-cache' when building due to bug with 'kind' not retagging properly
+
 	$(eval BUILD = $(shell openssl rand -hex 20;))
-	docker build -t enrich-api:${BUILD} enrich-api
+	docker build --no-cache -t enrich-api:${BUILD} enrich-api
 	kind -n demo load docker-image enrich-api:${BUILD}
+	docker build --no-cache -t kafka-connect:${BUILD} kafka-connect
+	kind -n demo load docker-image kafka-connect:${BUILD}
+
 	cd manifests; npm i; cdk8s import; npm run compile; BUILD=${BUILD} cdk8s synth
 	kubectl apply -f manifests/dist/manifests.k8s.yaml
 
 clear-data:
 	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic demo
+	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic demo_streams
 	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic demo_enriched
 	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic demo_enriched_streams
 	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic streams-linesplit-output
@@ -52,3 +58,15 @@ clear-data:
 	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic streams-wordcount-counts-store-repartition
 	- rm data/output_file2file.csv
 	- rm data/output_kafka2file*.csv
+
+kafka-connect-push-input:
+	kubectl cp data/input.csv $$(kubectl get pod -l app=kafka-connect -o custom-columns=":metadata.name" --no-headers):/home/kafka/input.csv
+
+kafka-connect-consume-topic-input:
+	kafkacat -b my-cluster-kafka-0.my-cluster-kafka-brokers.kafka.svc:9092 -C -t demo_streams
+
+kafka-connect-consume-topic-output:
+	kafkacat -b my-cluster-kafka-0.my-cluster-kafka-brokers.kafka.svc:9092 -C -t demo_enriched_streams
+
+kafka-connect-pull-output:
+	kubectl cp $$(kubectl get pod -l app=kafka-connect -o custom-columns=":metadata.name" --no-headers):/home/kafka/output.csv data/output_streams.csv
