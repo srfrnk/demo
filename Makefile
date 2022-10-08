@@ -44,5 +44,11 @@ deploy:
 clear-data:
 	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic demo
 	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic demo_enriched
+	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic demo_enriched_streams
+	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic streams-linesplit-output
+	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic streams-wordcount-counts-store-changelog
+	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic demo_copy
+	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic streams-wordcount-output
+	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic streams-wordcount-counts-store-repartition
 	- rm data/output_file2file.csv
 	- rm data/output_kafka2file*.csv
