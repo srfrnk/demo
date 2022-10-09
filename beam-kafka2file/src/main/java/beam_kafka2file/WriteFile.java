@@ -7,14 +7,16 @@ import org.apache.beam.sdk.values.PDone;
 
 public class WriteFile extends PTransform<PCollection<String>, PDone> {
   private String header;
+  private String outputFile;
 
-  public WriteFile(String header) {
+  public WriteFile(String header,String outputFile) {
     this.header = header;
+    this.outputFile = outputFile;
   }
 
   @Override
   public PDone expand(PCollection<String> input) {
-    return input.apply(TextIO.write().to("../data/output_kafka2file.csv")
+    return input.apply(TextIO.write().to(outputFile)
         .withHeader(header).withoutSharding());
   }
 }

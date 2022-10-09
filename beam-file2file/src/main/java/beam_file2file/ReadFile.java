@@ -11,14 +11,16 @@ import org.apache.beam.sdk.values.TypeDescriptors;
 
 public class ReadFile extends PTransform<PBegin, PCollection<KV<String, String>>> {
   private String header;
+  private String inputFile;
 
-  public ReadFile(String header) {
+  public ReadFile(String header,String inputFile) {
     this.header = header;
+    this.inputFile = inputFile;
   }
 
   @Override
   public PCollection<KV<String, String>> expand(PBegin input) {
-    return input.apply("Read lines", TextIO.read().from("../data/input.csv"))
+    return input.apply("Read lines", TextIO.read().from(inputFile))
         .apply("Filter headers", Filter.by((String line) -> !line.equals(header)))
         .apply("Split columns",
             MapElements.into(TypeDescriptor.of(String[].class))

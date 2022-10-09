@@ -22,7 +22,7 @@ public class App {
         private static Logger logger = LoggerFactory.getLogger(App.class);
 
         public static void main(String[] args) {
-                PipelineOptions options = PipelineOptionsFactory.fromArgs(args).create();
+                AppPipelineOptions options = PipelineOptionsFactory.fromArgs(args).withValidation().as(AppPipelineOptions.class);
                 Pipeline pipeline = Pipeline.create(options);
                 PCollection<KV<Long, String>> linesInput = pipeline.apply(KafkaIO
                                 .<Long, String>read().withMaxNumRecords(10000)
@@ -40,7 +40,8 @@ public class App {
                 linesInput.apply("Remove keys",
                                 MapElements.into(TypeDescriptors.strings())
                                                 .via(KV<Long, String>::getValue))
-                                .apply(new WriteFile(HEADER_OUTPUT));
+                                .apply(new WriteFile(HEADER_OUTPUT,options.getOutputFile()));
                 pipeline.run();
         }
 }
+

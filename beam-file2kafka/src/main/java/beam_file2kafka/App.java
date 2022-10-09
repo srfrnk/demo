@@ -2,7 +2,6 @@ package beam_file2kafka;
 
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.kafka.KafkaIO;
-import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.Distinct;
 import org.apache.beam.sdk.values.PCollection;
@@ -17,9 +16,9 @@ public class App {
   private static Logger logger = LoggerFactory.getLogger(App.class);
 
   public static void main(String[] args) {
-    PipelineOptions options = PipelineOptionsFactory.fromArgs(args).create();
+    AppPipelineOptions options = PipelineOptionsFactory.fromArgs(args).withValidation().as(AppPipelineOptions.class);
     Pipeline pipeline = Pipeline.create(options);
-    PCollection<String> linesInput = pipeline.apply(new ReadFile(HEADER_INPUT));
+    PCollection<String> linesInput = pipeline.apply(new ReadFile(HEADER_INPUT,options.getInputFile()));
     linesInput.apply("Dedup", Distinct.create())
         .apply(KafkaIO.<Void, String>write().withBootstrapServers(KAFKA_BROKER).withTopic("demo")
             .withValueSerializer(StringSerializer.class).values());

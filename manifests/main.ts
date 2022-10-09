@@ -61,16 +61,12 @@ export class MyChart extends Chart {
         template: {
           metadata: {
             labels: labelKafkaConnect,
-            annotations: {
-              // 'k9scli.io/auto-port-forwards': 'enrich-api::3000:3000'
-            }
           },
           spec: {
             containers: [
               {
                 name: 'kafka-connect',
                 image: `kafka-connect:${process.env['BUILD']}`,
-                // ports: [{ containerPort: 3000 }],
               }
             ]
           }

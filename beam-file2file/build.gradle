@@ -1,21 +1,21 @@
 plugins {
-    id "java"
-    id "application"
-    id "com.github.johnrengelman.shadow" version "7.+"
+  id "java"
+  id "application"
+  id "com.github.johnrengelman.shadow" version "7.+"
 }
 
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 application {
-    mainClass = "beam_file2file.App"
+  mainClass = "beam_file2file.App"
 }
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
-    }
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(11)
+  }
 }
 
 ext.apacheBeamVersion = "2.+"
@@ -26,11 +26,10 @@ dependencies {
 
   implementation "org.apache.beam:beam-sdks-java-core:$apacheBeamVersion"
   implementation "org.apache.beam:beam-runners-direct-java:$apacheBeamVersion"
+
   implementation "org.slf4j:slf4j-api:1.+"
   implementation "org.slf4j:slf4j-jdk14:1.+"
   implementation "org.json:json:20220924"
-
-  shadow "org.apache.beam:beam-sdks-java-core:$apacheBeamVersion"
 }
 
 shadowJar {

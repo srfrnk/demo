@@ -3,6 +3,7 @@ setup:
 	kind create cluster --config=cluster-config.yaml --image kindest/node:v1.24.0
 	kubectl create namespace kafka
 	kubectl create namespace couchbase
+	kubectl create namespace flink
 	kubectl create -f 'https://strimzi.io/install/latest?namespace=kafka' -n kafka
 	kubectl apply -f https://strimzi.io/examples/latest/kafka/kafka-persistent-single.yaml -n kafka
 	kubectl wait kafka/my-cluster --for=condition=Ready --timeout=3000s -n kafka
@@ -13,6 +14,8 @@ setup:
 	kubectl run -n couchbase --attach --rm --restart=Never -i --image yauritux/busybox-curl busybox --command -- sh -c "while ! curl http://couchbase-couchbase-operator:8080 2>/dev/null; do sleep 1; done"
 	kubectl apply -f couchbase-config.yaml -n couchbase
 	while ! kubectl wait pod/couchbase-0000 --for=condition=Ready --timeout=3000s -n couchbase 2>/dev/null; do sleep 1; done
+	kubectl apply -f flink-manifests.yaml
+	kubectl wait deployment/flink-jobmanager --for=condition=Available --timeout=3000s -n flink
 	kubectl annotate -n couchbase pod/couchbase-0000 k9scli.io/auto-port-forwards=couchbase-server::8091:8091
 	kubectl annotate -n kafka pod/my-cluster-kafka-0 k9scli.io/auto-port-forwards=kafka::9092:9092
 	- mkdir data
@@ -21,6 +24,8 @@ setup:
 	@echo "**************************************************************************************************************************************"
 	@echo "Make sure your '/etc/hosts' file contains:"
 	@echo "127.0.0.1 my-cluster-kafka-0.my-cluster-kafka-brokers.kafka.svc"
+	@echo "127.0.0.1 flink-jobmanager.flink.svc"
+	@echo "127.0.0.1 enrich-api.default.svc"
 	@echo "**************************************************************************************************************************************"
 	@echo
 	@echo "**************************************************************************************************************************************"
@@ -59,7 +64,7 @@ clear-data:
 	- rm data/output_*.csv
 
 kafka-connect-push-input:
-	kubectl cp data/input.csv $$(kubectl get pod -l app=kafka-connect -o custom-columns=":metadata.name" --no-headers):/home/kafka/input.csv
+	kubectl -n default cp data/input.csv $$(kubectl get -n default pod -l app=kafka-connect -o custom-columns=":metadata.name" --no-headers):/home/kafka/input.csv
 
 kafka-connect-consume-topic-input:
 	kafkacat -b my-cluster-kafka-0.my-cluster-kafka-brokers.kafka.svc:9092 -C -t demo_streams
@@ -68,4 +73,4 @@ kafka-connect-consume-topic-output:
 	kafkacat -b my-cluster-kafka-0.my-cluster-kafka-brokers.kafka.svc:9092 -C -t demo_enriched_streams
 
 kafka-connect-pull-output:
-	kubectl cp $$(kubectl get pod -l app=kafka-connect -o custom-columns=":metadata.name" --no-headers):/home/kafka/output.csv data/output_streams.csv
+	kubectl -n default cp $$(kubectl get -n default pod -l app=kafka-connect -o custom-columns=":metadata.name" --no-headers):/home/kafka/output.csv data/output_streams.csv

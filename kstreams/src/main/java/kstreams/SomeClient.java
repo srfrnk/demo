@@ -16,7 +16,7 @@ public class SomeClient {
 
   public static String callAPI(String query) {
     try {
-      URL obj = new URL(String.format("http://localhost:3000?q=%s",
+      URL obj = new URL(String.format("http://enrich-api.default.svc:3000?q=%s",
           URLEncoder.encode(query, StandardCharsets.UTF_8)));
       HttpURLConnection con = (HttpURLConnection) obj.openConnection();
       con.setRequestMethod("GET");
