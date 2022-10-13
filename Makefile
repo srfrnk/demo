@@ -4,9 +4,11 @@ setup:
 	kubectl create namespace kafka
 	kubectl create namespace couchbase
 	kubectl create namespace flink
+
 	kubectl create -f 'https://strimzi.io/install/latest?namespace=kafka' -n kafka
 	kubectl apply -f https://strimzi.io/examples/latest/kafka/kafka-persistent-single.yaml -n kafka
 	kubectl wait kafka/my-cluster --for=condition=Ready --timeout=3000s -n kafka
+
 	helm repo add couchbase https://couchbase-partners.github.io/helm-charts/
 	helm repo update
 	helm install -n couchbase couchbase --set cluster.name=couchbase couchbase/couchbase-operator --version 2.3 --set cluster.security.password='Administrator' --set cluster.security.password='password'
@@ -14,10 +16,19 @@ setup:
 	kubectl run -n couchbase --attach --rm --restart=Never -i --image yauritux/busybox-curl busybox --command -- sh -c "while ! curl http://couchbase-couchbase-operator:8080 2>/dev/null; do sleep 1; done"
 	kubectl apply -f couchbase-config.yaml -n couchbase
 	while ! kubectl wait pod/couchbase-0000 --for=condition=Ready --timeout=3000s -n couchbase 2>/dev/null; do sleep 1; done
+
 	kubectl apply -f flink-manifests.yaml
 	kubectl wait deployment/flink-jobmanager --for=condition=Available --timeout=3000s -n flink
+
+	helm repo add akhq https://akhq.io/
+	helm upgrade -n kafka --install akhq akhq/akhq
+	kubectl apply -f akhq-config.yaml
+	kubectl wait deployment/akhq --for=condition=Available --timeout=3000s -n kafka
+
 	kubectl annotate -n couchbase pod/couchbase-0000 k9scli.io/auto-port-forwards=couchbase-server::8091:8091
 	kubectl annotate -n kafka pod/my-cluster-kafka-0 k9scli.io/auto-port-forwards=kafka::9092:9092
+	kubectl annotate -n kafka pod -l app.kubernetes.io/name=akhq k9scli.io/auto-port-forwards=akhq::8080:8080
+
 	- mkdir data
 
 	@echo "\033[0;33m"
@@ -29,7 +40,7 @@ setup:
 	@echo "**************************************************************************************************************************************"
 	@echo
 	@echo "**************************************************************************************************************************************"
-	@echo "Make sure you run port forwards for couchbase kafka and enrich-api (Or use K9S for that)"
+	@echo "Make sure you run port forwards for couchbase, kafka, flink, akhq and enrich-api (Or use K9S for that)"
 	@echo "**************************************************************************************************************************************"
 	@echo "\033[0"
 

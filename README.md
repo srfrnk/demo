@@ -15,3 +15,8 @@
 ## Deploy
 
 1. Run `make deploy`
+
+## To access gcloud
+
+1. Setup a [gcloud free account (don't add billing)](https://cloud.google.com/)
+1. Run `gcloud auth login`

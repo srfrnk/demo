@@ -29,12 +29,14 @@ public class App {
                 PipelineOptions options = PipelineOptionsFactory.fromArgs(args).create();
                 Pipeline pipeline = Pipeline.create(options);
                 PCollection<KV<String, String>> linesInput = pipeline.apply(KafkaIO
-                                .<Long, String>read().withMaxNumRecords(10000)
+                                .<Long, String>read()/* .withMaxNumRecords(10000) */
                                 .withBootstrapServers(KAFKA_BROKER).withTopic("demo")
                                 .withConsumerConfigUpdates(
                                                 new ImmutableMap.Builder<String, Object>()
                                                                 .put(ConsumerConfig.GROUP_ID_CONFIG,
                                                                                 "kafka2kafka")
+                                                                .put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,
+                                                                                true)
                                                                 .put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
                                                                                 "earliest")
                                                                 .build())

@@ -22,7 +22,8 @@ public class App {
         private static Logger logger = LoggerFactory.getLogger(App.class);
 
         public static void main(String[] args) {
-                AppPipelineOptions options = PipelineOptionsFactory.fromArgs(args).withValidation().as(AppPipelineOptions.class);
+                AppPipelineOptions options = PipelineOptionsFactory.fromArgs(args).withValidation()
+                                .as(AppPipelineOptions.class);
                 Pipeline pipeline = Pipeline.create(options);
                 PCollection<KV<Long, String>> linesInput = pipeline.apply(KafkaIO
                                 .<Long, String>read().withMaxNumRecords(10000)
@@ -31,6 +32,8 @@ public class App {
                                                 new ImmutableMap.Builder<String, Object>()
                                                                 .put(ConsumerConfig.GROUP_ID_CONFIG,
                                                                                 "kafka2file")
+                                                                .put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,
+                                                                                true)
                                                                 .put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
                                                                                 "earliest")
                                                                 .build())
@@ -40,7 +43,7 @@ public class App {
                 linesInput.apply("Remove keys",
                                 MapElements.into(TypeDescriptors.strings())
                                                 .via(KV<Long, String>::getValue))
-                                .apply(new WriteFile(HEADER_OUTPUT,options.getOutputFile()));
+                                .apply(new WriteFile(HEADER_OUTPUT, options.getOutputFile()));
                 pipeline.run();
         }
 }
