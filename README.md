@@ -11,6 +11,7 @@
 1. Install latest `typescript`: `npm install typescript -g`
 1. Install latest `gradle`: `brew install gradle` or `brew upgrade gradle`
 1. Run `make setup`
+1. **IMPORTANT** If you're being tesco VPN - run `make load-images` in a second terminal to allow the previous step to complete
 
 ## Deploy
 
