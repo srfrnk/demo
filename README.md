@@ -41,7 +41,7 @@
 1. Open terminal in `kstreams` folder
 1. Run `gradle run`
 
-#### Pull output
+#### Pull output
 
 1. A kafka connector pod should already be running is "Deploy" was done.
 1. Open terminal in root folder
