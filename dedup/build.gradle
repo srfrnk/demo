@@ -1,0 +1,33 @@
+plugins {
+  id "java"
+  id "application"
+}
+
+repositories {
+  mavenCentral()
+}
+
+application {
+  mainClass = "dedup.App"
+}
+
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(11)
+  }
+}
+
+ext.apacheBeamVersion = "2.+"
+
+dependencies {
+  testImplementation "junit:junit:4.13.2"
+  implementation "com.google.guava:guava:31.0.1-jre"
+
+  implementation "org.apache.beam:beam-sdks-java-core:$apacheBeamVersion"
+  implementation "org.apache.beam:beam-runners-direct-java:$apacheBeamVersion"
+
+  implementation "org.slf4j:slf4j-api:1.+"
+  implementation "org.slf4j:slf4j-jdk14:1.+"
+  implementation "org.json:json:20220924"
+}
+
