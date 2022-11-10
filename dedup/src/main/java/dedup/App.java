@@ -1,6 +1,10 @@
 package dedup;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.beam.sdk.Pipeline;
@@ -43,10 +47,18 @@ public class App {
         .setCoder(KvCoder.of(AvroCoder.of(TypeDescriptors.strings()),
             AvroCoder.of(TypeDescriptor.of(String[].class))))
         .apply("Dedup", GroupByKey.<String, String[]>create())
-        .apply(MapElements.into(TypeDescriptor.of(String[].class))
-            .via((group) -> {
-              return StreamSupport.stream(group.getValue().spliterator(), false).findFirst().get();
-            }))
+
+        .apply(ParDo.of(new DoFn<KV<String, Iterable<String[]>>, String[]>() {
+          @ProcessElement
+          public void processElement(ProcessContext c) {
+            KV<String, Iterable<String[]>> group = c.element();
+            List<String[]> values = StreamSupport.stream(group.getValue().spliterator(), false)
+                .collect(Collectors.toList());
+            if (values.size() == 1) {
+              c.output(values.get(0));
+            }
+          }
+        }))
         .setCoder(AvroCoder.of(TypeDescriptor.of(String[].class)));
 
     linesOutput.apply(Count.globally()).apply(ParDo.of(new DoFn<Long, Void>() {
