@@ -1,5 +1,6 @@
 package kstreams;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
@@ -9,6 +10,9 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.kstream.SessionWindows;
+import org.apache.kafka.streams.kstream.Windows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +43,8 @@ public class App {
       return new KeyValue<>(cols[0], cols[1]);
     }).map((key, value) -> new KeyValue<>(key, SomeClient.callAPI(value)))
         .map((key, value) -> new KeyValue<>(null, String.format("%s,%s", key, value)))
-        .to("demo_enriched_streams");
+        .groupBy((k,v)->v.substring(0, 1)).count()
+        .toStream().mapValues(v -> v.toString()).to("counts", Produced.with(Serdes.String(), Serdes.String()));
 
     final Topology topology = builder.build();
     final KafkaStreams streams = new KafkaStreams(topology, props);
