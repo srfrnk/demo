@@ -45,7 +45,7 @@ setup:
 	@echo "\033[0"
 
 load-images:
-	curl -sL "https://strimzi.io/install/latest?namespace=kafka" > /tmp/strimzi_manifest.yaml	
+	curl -sL "https://strimzi.io/install/latest?namespace=kafka" > /tmp/strimzi_manifest.yaml
 	IMG_OPERATOR=$$(cat /tmp/strimzi_manifest.yaml | yq 'select(.kind == "Deployment" and .metadata.name== "strimzi-cluster-operator") | .spec.template.spec.containers[0].image') &&\
 		docker pull $${IMG_OPERATOR} &&\
 		kind load docker-image -n demo $${IMG_OPERATOR}
