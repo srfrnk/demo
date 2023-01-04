@@ -20,9 +20,7 @@ public class WriteFile extends PTransform<PCollection<String[]>, PDone> {
                 .apply("Merge columns",
                         MapElements.into(TypeDescriptors.strings())
                                 .via((String[] cols) -> String.join(",", cols)))
-                .apply(TextIO.write().to(outputFile).withoutSharding().withHeader(header)/*
-                                                                                          * .withCompression(Compression
-                                                                                          * .GZIP)
-                                                                                          */);
+                .apply(TextIO.write().to(outputFile).withoutSharding().withHeader(header)
+                        .withCompression(Compression.GZIP));
     }
 }
