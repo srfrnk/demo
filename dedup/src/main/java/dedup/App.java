@@ -29,36 +29,36 @@ public class App {
                 .as(AppPipelineOptions.class);
         Pipeline pipeline = Pipeline.create(options);
         PCollection<String[]> linesBaseline = pipeline.apply(SCHEMA, new ReadFile(SCHEMA, options.getBaselineFile()));
-        PCollection<String[]> linesInput = pipeline.apply(SCHEMA, new ReadFile(SCHEMA, options.getInputFile()));
-        linesInput.apply(Count.globally()).apply(ParDo.of(new DoFn<Long, Void>() {
+        PCollection<String[]> linesCandidate = pipeline.apply(SCHEMA, new ReadFile(SCHEMA, options.getCandidateFile()));
+        linesCandidate.apply(Count.globally()).apply(ParDo.of(new DoFn<Long, Void>() {
             @ProcessElement
             public void processElement(ProcessContext c) {
                 Long count = c.element();
-                logger.info("Total Input: {}", count);
+                logger.info("Total Candidate Lines: {}", count);
             }
         }));
 
         PCollection<KV<String, String[]>> parsedBaseline = linesBaseline.apply(MapElements
                 .into(TypeDescriptors.kvs(TypeDescriptors.strings(), TypeDescriptor.of(String[].class)))
                 .via((String[] cols) -> {
-                    return KV.of(String.join(",", Arrays.copyOfRange(cols, 1, cols.length - 1)), cols);
+                    return KV.of(cols[0], cols);
                 }))
                 .setCoder(KvCoder.of(AvroCoder.of(TypeDescriptors.strings()),
                         AvroCoder.of(TypeDescriptor.of(String[].class))));
 
-        PCollection<KV<String, String[]>> parsedInput = linesInput.apply(MapElements
+        PCollection<KV<String, String[]>> parsedCandidate = linesCandidate.apply(MapElements
                 .into(TypeDescriptors.kvs(TypeDescriptors.strings(), TypeDescriptor.of(String[].class)))
                 .via((String[] cols) -> {
-                    return KV.of(String.join(",", Arrays.copyOfRange(cols, 1, cols.length - 1)), cols);
+                    return KV.of(cols[0], cols);
                 }))
                 .setCoder(KvCoder.of(AvroCoder.of(TypeDescriptors.strings()),
                         AvroCoder.of(TypeDescriptor.of(String[].class))));
 
         TupleTag<String[]> baselineTag = new TupleTag<>();
-        TupleTag<String[]> inputTag = new TupleTag<>();
+        TupleTag<String[]> candidateTag = new TupleTag<>();
 
         PCollection<KV<String, CoGbkResult>> tuple = KeyedPCollectionTuple
-                .of(inputTag, parsedInput)
+                .of(candidateTag, parsedCandidate)
                 .and(baselineTag, parsedBaseline)
                 .apply(CoGroupByKey.create());
 
@@ -68,8 +68,8 @@ public class App {
                     public void processElement(ProcessContext c) {
                         CoGbkResult group = c.element().getValue();
                         if (!group.getAll(baselineTag).iterator().hasNext()
-                                && group.getAll(inputTag).iterator().hasNext()) {
-                            c.output(group.getAll(inputTag).iterator().next());
+                                && group.getAll(candidateTag).iterator().hasNext()) {
+                            c.output(group.getAll(candidateTag).iterator().next());
                         }
                     }
                 }))

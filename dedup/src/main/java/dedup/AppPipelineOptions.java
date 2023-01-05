@@ -10,10 +10,10 @@ public interface AppPipelineOptions extends PipelineOptions {
 
     void setBaselineFile(String value);
 
-    @Description("Path of the file to read from")
-    String getInputFile();
+    @Description("Path of the candidate file to read from")
+    String getCandidateFile();
 
-    void setInputFile(String value);
+    void setCandidateFile(String value);
 
     @Description("Path of the file to write to")
     @Required
