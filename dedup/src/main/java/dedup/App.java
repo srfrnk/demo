@@ -41,7 +41,7 @@ public class App {
         PCollection<KV<String, String[]>> parsedBaseline = linesBaseline.apply(MapElements
                 .into(TypeDescriptors.kvs(TypeDescriptors.strings(), TypeDescriptor.of(String[].class)))
                 .via((String[] cols) -> {
-                    return KV.of(cols[0], cols);
+                    return KV.of(String.join(",", Arrays.copyOfRange(cols, 1, cols.length - 1)), cols);
                 }))
                 .setCoder(KvCoder.of(AvroCoder.of(TypeDescriptors.strings()),
                         AvroCoder.of(TypeDescriptor.of(String[].class))));
@@ -49,7 +49,7 @@ public class App {
         PCollection<KV<String, String[]>> parsedCandidate = linesCandidate.apply(MapElements
                 .into(TypeDescriptors.kvs(TypeDescriptors.strings(), TypeDescriptor.of(String[].class)))
                 .via((String[] cols) -> {
-                    return KV.of(cols[0], cols);
+                    return KV.of(String.join(",", Arrays.copyOfRange(cols, 1, cols.length - 1)), cols);
                 }))
                 .setCoder(KvCoder.of(AvroCoder.of(TypeDescriptors.strings()),
                         AvroCoder.of(TypeDescriptor.of(String[].class))));
