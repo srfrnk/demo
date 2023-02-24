@@ -10,8 +10,9 @@
 1. Install latest [kafkacat](https://github.com/edenhill/kcat)
 1. Install latest `typescript`: `npm install typescript -g`
 1. Install latest `gradle`: `brew install gradle` or `brew upgrade gradle`
+1. Install [`yq`](https://github.com/mikefarah/yq)
 1. Run `make setup`
-1. **IMPORTANT** If you're being tesco VPN - run `make load-images` in a second terminal to allow the previous step to complete
+1. **IMPORTANT** If you're behind Tesco VPN - run `make load-images` in a second terminal to allow the previous step to complete
 
 ## Deploy
 
@@ -66,7 +67,7 @@
 
 1. Setup a [gcloud free account (don't add billing)](https://cloud.google.com/)
 1. Run `gcloud auth login`
-1. Run `make flinks-runner`
+1. Run `make flink-runner`
 
 #### Enrich kafka -> kafka (runs locally or in Flink)
 
@@ -78,7 +79,7 @@
 
 ##### Run on Flink
 
-1. Run `make flinks-runner`
+1. Run `make flink-runner`
 
 #### Aggregate kafka -> file (runs locally)
 

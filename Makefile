@@ -45,10 +45,13 @@ setup:
 	@echo "\033[0"
 
 load-images:
-	docker pull quay.io/strimzi/operator:0.31.1
-	kind load docker-image -n demo quay.io/strimzi/operator:0.31.1
-	docker pull quay.io/strimzi/kafka:0.31.1-kafka-3.2.3
-	kind load docker-image -n demo quay.io/strimzi/kafka:0.31.1-kafka-3.2.3
+	curl -sL "https://strimzi.io/install/latest?namespace=kafka" > /tmp/strimzi_manifest.yaml
+	$(eval IMG_OPERATOR = $(shell cat /tmp/strimzi_manifest.yaml | yq 'select(.kind == "Deployment" and .metadata.name== "strimzi-cluster-operator") | .spec.template.spec.containers[0].image'))
+	$(eval IMG_KAFKA = $(shell cat /tmp/strimzi_manifest.yaml | yq 'select(.kind == "Deployment" and .metadata.name== "strimzi-cluster-operator") | .spec.template.spec.containers[0].env[] | select(.name=="STRIMZI_DEFAULT_KAFKA_EXPORTER_IMAGE") | .value'))
+	docker pull ${IMG_OPERATOR}
+	kind load docker-image -n demo ${IMG_OPERATOR}
+	docker pull ${IMG_KAFKA}
+	kind load docker-image -n demo ${IMG_KAFKA}
 
 deploy:
 	# Used '--no-cache' when building due to bug with 'kind' not retagging properly
