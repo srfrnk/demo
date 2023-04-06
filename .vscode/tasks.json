@@ -1,0 +1,36 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "gradle beam_kafka2file",
+      "type": "shell",
+      "options": {
+        "cwd": "beam-kafka2file"
+      },
+      "command": [
+        "gradle run",
+        "--debug-jvm",
+        "--args",
+        "\"\n--outputFile=../data/output_kafka2file.csv\""
+      ],
+      "isBackground": true,
+      "problemMatcher": [
+        {
+          "pattern": [
+            {
+              "regexp": "\\b\\B",
+              "file": 1,
+              "location": 2,
+              "message": 3
+            }
+          ],
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "^.*",
+            "endsPattern": "^Listening for transport dt_socket at address:*"
+          }
+        }
+      ]
+    }
+  ]
+}

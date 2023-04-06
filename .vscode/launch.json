@@ -1,0 +1,17 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "beam_kafka2file",
+      "request": "attach",
+      "hostName": "localhost",
+      "port": "5005",
+      "projectName": "beam-kafka2file",
+      "preLaunchTask": "gradle beam_kafka2file"
+    }
+  ]
+}

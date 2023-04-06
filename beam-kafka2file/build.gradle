@@ -20,9 +20,20 @@ java {
     languageVersion = JavaLanguageVersion.of(11)
   }
 }
+sourceSets {
+    main {
+        java {
+            srcDirs = [
+              'src/main/java',
+              'build/generated/sources/annotationProcessor/java/main'
+            ]
+        }
+    }
+}
 
 ext.apacheBeamVersion = "2.+"
 ext.kafkaVersion = "3.+"
+ext.autoValueVersion = "1.+"
 
 dependencies {
   testImplementation "junit:junit:4.13.2"
@@ -37,6 +48,9 @@ dependencies {
   implementation "org.slf4j:slf4j-api:1.+"
   implementation "org.slf4j:slf4j-jdk14:1.+"
   implementation "org.json:json:20220924"
+
+  compileOnly "com.google.auto.value:auto-value-annotations:$autoValueVersion"
+  annotationProcessor "com.google.auto.value:auto-value:$autoValueVersion"
 }
 
 shadowJar {
