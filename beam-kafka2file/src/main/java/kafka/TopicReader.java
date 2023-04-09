@@ -7,7 +7,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class TopicReader<K, V> extends DoFn<String, KV<String, Integer>> {
+class TopicReader<K, V> extends DoFn<byte[], KV<String, Integer>> {
   private static Logger logger = LoggerFactory.getLogger(TopicReader.class);
 
   private Options<K, V> options;
@@ -29,11 +29,13 @@ class TopicReader<K, V> extends DoFn<String, KV<String, Integer>> {
   public void teardown() {}
 
   @ProcessElement
-  public void processElement(@Element String topic, OutputReceiver<KV<String, Integer>> output)
+  public void processElement(@Element byte[] dummy, OutputReceiver<KV<String, Integer>> output)
       throws InstantiationException, IllegalAccessException, IllegalArgumentException,
       InvocationTargetException, NoSuchMethodException, SecurityException {
     KafkaConsumer<K, V> consumer = Helper.getConsumer(options);
-    consumer.partitionsFor(topic).stream().forEach(p -> output.output(KV.of(topic, p.partition())));
+    consumer.partitionsFor(options.topic()).stream().forEach(partitionInfo -> {
+      output.output(KV.of(options.topic(), partitionInfo.partition()));
+    });
     consumer.close();
   }
 }

@@ -8,7 +8,7 @@ import org.apache.beam.sdk.coders.KvCoder;
 import org.apache.beam.sdk.coders.NullableCoder;
 import org.apache.beam.sdk.coders.StringUtf8Coder;
 import org.apache.beam.sdk.coders.VarIntCoder;
-import org.apache.beam.sdk.transforms.Create;
+import org.apache.beam.sdk.transforms.Impulse;
 import org.apache.beam.sdk.transforms.PTransform;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.values.KV;
@@ -47,10 +47,10 @@ public class Read<K, V> extends PTransform<PBegin, PCollection<KV<K, V>>> {
     Pipeline pipeline = input.getPipeline();
     CoderRegistry coderRegistry = pipeline.getCoderRegistry();
     try {
-      return pipeline.apply(Create.of(options.topic()))
-          .apply(ParDo.of(new TopicReader<K, V>(options)))
+      return pipeline.apply(Impulse.create()).apply(ParDo.of(new TopicReader<K, V>(options)))
           .setCoder(KvCoder.of(StringUtf8Coder.of(), VarIntCoder.of()))
-          .apply(ParDo.of(new BoundedPartitionReader<K, V>(options))).setCoder(getCoders(coderRegistry));
+          .apply(ParDo.of(new BoundedPartitionReader<K, V>(options)))
+          .setCoder(getCoders(coderRegistry));
     } catch (Exception e) {
       logger.error("", e);
       return null;
