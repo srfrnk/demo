@@ -5,19 +5,7 @@ import org.apache.beam.sdk.transforms.splittabledofn.HasDefaultTracker;
 
 class PartitionRestriction
     implements Serializable, HasDefaultTracker<PartitionRestriction, PartitionTracker> {
-  PartitionPosition lastCommited;
-
-  static PartitionRestriction of(PartitionPosition position) {
-    return new PartitionRestriction(position);
-  }
-
-  public PartitionRestriction(PartitionPosition lastCommited) {
-    this.lastCommited = lastCommited;
-  }
-
-  // PartitionRestriction next() {
-  //   return PartitionRestriction.of(lastCommited.next());
-  // }
+  public PartitionRestriction() {}
 
   @Override
   public PartitionTracker newTracker() {
@@ -26,15 +14,11 @@ class PartitionRestriction
 
   @Override
   public boolean equals(Object obj) {
-    return this.lastCommited.equals(((PartitionRestriction) obj).lastCommited);
+    return true;
   }
 
   @Override
   public int hashCode() {
-    return lastCommited.hashCode();
-  }
-
-  synchronized boolean tryClaim(PartitionPosition position) {
-    return position.offset > lastCommited.offset;
+    return 0;
   }
 }

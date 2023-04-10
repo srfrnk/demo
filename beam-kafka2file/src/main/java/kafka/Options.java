@@ -9,7 +9,7 @@ import com.google.auto.value.AutoValue;
 @AutoValue
 public abstract class Options<K, V> implements Serializable {
   public static <K, V> Builder<K, V> builder() {
-    return new AutoValue_Options.Builder<>();
+    return new AutoValue_Options.Builder<K, V>().withPollTimeMS(100);
   }
 
   @AutoValue.Builder
@@ -42,6 +42,10 @@ public abstract class Options<K, V> implements Serializable {
       return setValueDeserializer(valueDeserializer);
     }
 
+    public Builder<K, V> withPollTimeMS(long pollTimeMS) {
+      return setPollTimeMS(pollTimeMS);
+    }
+
     abstract Builder<K, V> setBootstrapServers(String bootstrapServers);
 
     abstract Builder<K, V> setTopic(String topic);
@@ -55,6 +59,8 @@ public abstract class Options<K, V> implements Serializable {
     abstract Builder<K, V> setKeyDeserializer(Class<? extends Deserializer<K>> keyDeserializer);
 
     abstract Builder<K, V> setValueDeserializer(Class<? extends Deserializer<V>> valueDeserializer);
+
+    abstract Builder<K, V> setPollTimeMS(long pollTimeMS);
 
     public abstract Options<K, V> build();
   }
@@ -73,4 +79,5 @@ public abstract class Options<K, V> implements Serializable {
 
   abstract Class<? extends Deserializer<V>> valueDeserializer();
 
+  abstract long pollTimeMS();
 }

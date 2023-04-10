@@ -12,7 +12,7 @@ class PartitionTracker extends RestrictionTracker<PartitionRestriction, Partitio
 
   @Override
   public boolean tryClaim(PartitionPosition partition) {
-    return current.tryClaim(partition);
+    return true;
   }
 
   @Override
