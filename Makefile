@@ -45,13 +45,13 @@ setup:
 	@echo "\033[0"
 
 load-images:
-	curl -sL "https://strimzi.io/install/latest?namespace=kafka" > /tmp/strimzi_manifest.yaml
-	$(eval IMG_OPERATOR = $(shell cat /tmp/strimzi_manifest.yaml | yq 'select(.kind == "Deployment" and .metadata.name== "strimzi-cluster-operator") | .spec.template.spec.containers[0].image'))
-	$(eval IMG_KAFKA = $(shell cat /tmp/strimzi_manifest.yaml | yq 'select(.kind == "Deployment" and .metadata.name== "strimzi-cluster-operator") | .spec.template.spec.containers[0].env[] | select(.name=="STRIMZI_DEFAULT_KAFKA_EXPORTER_IMAGE") | .value'))
-	docker pull ${IMG_OPERATOR}
-	kind load docker-image -n demo ${IMG_OPERATOR}
-	docker pull ${IMG_KAFKA}
-	kind load docker-image -n demo ${IMG_KAFKA}
+	curl -sL "https://strimzi.io/install/latest?namespace=kafka" > /tmp/strimzi_manifest.yaml	
+	IMG_OPERATOR=$$(cat /tmp/strimzi_manifest.yaml | yq 'select(.kind == "Deployment" and .metadata.name== "strimzi-cluster-operator") | .spec.template.spec.containers[0].image') &&\
+		docker pull $${IMG_OPERATOR} &&\
+		kind load docker-image -n demo $${IMG_OPERATOR}
+	IMG_KAFKA=$$(cat /tmp/strimzi_manifest.yaml | yq 'select(.kind == "Deployment" and .metadata.name== "strimzi-cluster-operator") | .spec.template.spec.containers[0].env[] | select(.name=="STRIMZI_DEFAULT_KAFKA_EXPORTER_IMAGE") | .value') &&\
+		docker pull $${IMG_KAFKA} &&\
+		kind load docker-image -n demo $${IMG_KAFKA}
 
 deploy:
 	# Used '--no-cache' when building due to bug with 'kind' not retagging properly
@@ -88,3 +88,7 @@ kafka-connect-consume-topic-output:
 
 kafka-connect-pull-output:
 	kubectl -n default cp $$(kubectl get -n default pod -l app=kafka-connect -o custom-columns=":metadata.name" --no-headers):/home/kafka/output.csv data/output_streams.csv
+
+scale-topic:
+	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic demo
+	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --alter --topic demo --partitions 10
