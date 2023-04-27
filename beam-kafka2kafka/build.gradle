@@ -43,6 +43,6 @@ dependencies {
 
 shadowJar {
   archiveBaseName = "app"
-  classifier = null
+  archiveClassifier = null
   zip64 true
 }

@@ -92,3 +92,6 @@ kafka-connect-pull-output:
 scale-topic:
 	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic demo
 	- kubectl exec -n kafka my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --alter --topic demo --partitions 10
+
+create-demo-topic:
+	kubectl -n kafka exec my-cluster-kafka-0 -- /opt/kafka/bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --topic demo --partitions 10

@@ -25,7 +25,7 @@ sourceSets {
         java {
             srcDirs = [
               'src/main/java',
-              'build/generated/sources/annotationProcessor/java/main'
+              // 'build/generated/sources/annotationProcessor/java/main'
             ]
         }
     }
@@ -56,5 +56,6 @@ dependencies {
 
 shadowJar {
   archiveBaseName = "app"
-  classifier = null
+  archiveClassifier = null
+  zip64 true
 }

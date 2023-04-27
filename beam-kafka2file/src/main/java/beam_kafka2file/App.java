@@ -45,14 +45,14 @@ public class App {
         Options.<Long, String>builder().withTopic("demo").withGroupId("kafka2file")
             // .withMaxNumRecords(10000)
             .withIsolationLevel(IsolationLevel.READ_COMMITTED).withBootstrapServers(KAFKA_BROKER)
-            .withAutoOffsetResetConfig(OffsetResetStrategy.LATEST)
+            .withAutoOffsetResetConfig(OffsetResetStrategy.EARLIEST)
             .withKeyDeserializer(LongDeserializer.class)
             .withValueDeserializer(StringDeserializer.class).build()));
 
-    linesInput.apply(MapElements.into(TypeDescriptors.voids()).via((KV<Long, String> kv) -> {
-      logger.info("ELEMENT: {} {}", kv.getKey(), kv.getValue());
-      return null;
-    }));
+    // linesInput.apply(MapElements.into(TypeDescriptors.voids()).via((KV<Long, String> kv) -> {
+    //   logger.info("ELEMENT: {} {}", kv.getKey(), kv.getValue());
+    //   return null;
+    // }));
     linesInput
         .apply("Remove keys",
             MapElements.into(TypeDescriptors.strings()).via(KV<Long, String>::getValue))
