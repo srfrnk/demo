@@ -49,10 +49,10 @@ public class App {
             .withKeyDeserializer(LongDeserializer.class)
             .withValueDeserializer(StringDeserializer.class).build()));
 
-    // linesInput.apply(MapElements.into(TypeDescriptors.voids()).via((KV<Long, String> kv) -> {
-    //   logger.info("ELEMENT: {} {}", kv.getKey(), kv.getValue());
-    //   return null;
-    // }));
+    linesInput.apply(MapElements.into(TypeDescriptors.voids()).via((KV<Long, String> kv) -> {
+      logger.info("ELEMENT: {} {}", kv.getKey(), kv.getValue());
+      return null;
+    }));
     linesInput
         .apply("Remove keys",
             MapElements.into(TypeDescriptors.strings()).via(KV<Long, String>::getValue))

@@ -42,6 +42,7 @@ dependencies {
   implementation "org.apache.beam:beam-sdks-java-core:$apacheBeamVersion"
   implementation "org.apache.beam:beam-runners-direct-java:$apacheBeamVersion"
   implementation "org.apache.beam:beam-sdks-java-io-kafka:$apacheBeamVersion"
+  implementation "org.apache.beam:beam-runners-flink-1.15:2.41.0"
 
   implementation "org.apache.kafka:kafka-clients:$kafkaVersion"
 

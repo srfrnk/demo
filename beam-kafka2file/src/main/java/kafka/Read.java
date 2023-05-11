@@ -20,6 +20,7 @@ import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.transforms.Sum;
 import org.apache.beam.sdk.transforms.View;
 import org.apache.beam.sdk.transforms.DoFn.Element;
+import org.apache.beam.sdk.transforms.DoFn.ProcessElement;
 import org.apache.beam.sdk.transforms.windowing.AfterProcessingTime;
 import org.apache.beam.sdk.transforms.windowing.GlobalWindows;
 import org.apache.beam.sdk.transforms.windowing.Repeatedly;
@@ -66,16 +67,10 @@ public class Read<K, V> extends PTransform<PBegin, PCollection<KV<K, V>>> {
               .setCoder(KvCoder.of(StringUtf8Coder.of(), VarIntCoder.of()))
               .apply(ParDo.of(new BoundedPartitionReader<K, V>(options)))
               .setCoder(getCoders(coderRegistry));
-              var t=new BoundedReadFromUnboundedSource<KV<K,V>>(kafkaRecords, 0, null);
       var count = kafkaRecords.apply(Window.<KV<K, V>>into(new GlobalWindows())
           .triggering(Repeatedly.forever(AfterProcessingTime.pastFirstElementInPane()))
-          .discardingFiredPanes()).apply(Count.globally())
-      /* .apply(Window.<Long>into(new GlobalWindows())
-          .triggering(Repeatedly.forever(AfterProcessingTime.pastFirstElementInPane()))
-          .discardingFiredPanes())
-      .apply(Latest.globally()) */
-
-      /* .apply(View.asSingleton()) */;
+          .discardingFiredPanes()).apply(Count.globally());
+      // var countView = count.apply(View.asSingleton());
       count.apply(ParDo.of(new DoFn<Long, Void>() {
         @ProcessElement
         public void processElement(@Element Long count) {

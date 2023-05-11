@@ -54,11 +54,11 @@ class UnboundedPartitionReader<K, V> extends DoFn<KV<String, Integer>, KV<K, V>>
   @ProcessElement
   public ProcessContinuation processElement(@Element KV<String, Integer> topicPartition,
       RestrictionTracker<PartitionRestriction, PartitionPosition> tracker,
-      OutputReceiver<KV<K, V>> output, BundleFinalizer bundleFinalizer) throws Exception {
+      OutputReceiver<KV<K, V>> output/* , BundleFinalizer bundleFinalizer */) throws Exception {
     if (tracker.tryClaim(new PartitionPosition())) {
-      bundleFinalizer.afterBundleCommit(Instant.now().plus(Duration.standardSeconds(10)), () -> {
-        commitMaxConsumedOffsets();
-      });
+      // bundleFinalizer.afterBundleCommit(Instant.now().plus(Duration.standardSeconds(10)), () -> {
+        // commitMaxConsumedOffsets();
+      // });
 
       consumer.subscribe(Arrays.asList(topicPartition.getKey()));
       ConsumerRecords<K, V> records =
@@ -76,7 +76,8 @@ class UnboundedPartitionReader<K, V> extends DoFn<KV<String, Integer>, KV<K, V>>
   }
 
   public void commitMaxConsumedOffsets() {
-    consumer.commitSync(maxConsumedOffsets);
+    logger.debug("{}", maxConsumedOffsets);
+    // consumer.commitSync(maxConsumedOffsets);
     maxConsumedOffsets = null;
   }
 
